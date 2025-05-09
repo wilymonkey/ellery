@@ -1,8 +1,6 @@
 import { MetaProvider, Title } from "@solidjs/meta";
-import { A, createAsync, query } from "@solidjs/router";
-import { For, Suspense } from "solid-js";
-import Counter from "~/components/Counter";
-import { client } from "~/db/db";
+import { ChatList } from "~/components/ChatList";
+
 
 export default function Home() {
   return (
@@ -10,7 +8,7 @@ export default function Home() {
       <Title>Ellery - SMS</Title>
       <main class="flex flex-col gap-2 bg-slate-800 p-4">
         <Search />
-        <Chats />
+        <ChatList />
       </main>
     </MetaProvider>
   );
@@ -24,29 +22,5 @@ function Search() {
       </svg>
       <input class="outline-none" type="search" id="chat-search" name="q" placeholder="Search" />
     </div>
-  )
-}
-
-const getContacts = query(async () => {
-  "use server"
-  await client.balance.fetch();
-  return ["done"];
-  const messages = await client.messages.list();
-  return messages.map((message) => {
-    return message.from;
-  });
-}, "numbers")
-
-function Chats() {
-  const messages = createAsync(() => getContacts());
-
-  return (
-    <For each={messages()}>
-      {(item) => (
-        <div class="rounded-md hover:bg-slate-600 p-4">
-          {item}
-        </div>
-      )}
-    </For>
   )
 }

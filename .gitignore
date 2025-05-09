@@ -28,4 +28,4 @@ gitignore
 Thumbs.db
 
 # Drizzle
-db.sqlite
+db.sqlite*
