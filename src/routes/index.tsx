@@ -29,6 +29,8 @@ function Search() {
 
 const getContacts = query(async () => {
   "use server"
+  await client.balance.fetch();
+  return ["done"];
   const messages = await client.messages.list();
   return messages.map((message) => {
     return message.from;
