@@ -1,6 +1,7 @@
 // @refresh reload
 import { MetaProvider } from "@solidjs/meta";
 import { createHandler, StartServer } from "@solidjs/start/server";
+import { refresh_db } from "./db/db";
 
 export default createHandler(() => (
   <StartServer
@@ -8,10 +9,10 @@ export default createHandler(() => (
       <MetaProvider>
         <html lang="en">
           <head>
-            <meta name="description" content="SMS and Ordering for Healthsave Pharmacy" />
+            <meta name="description" content="SMS and Ordering design for a small pharmacy" />
             <meta charset="utf-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1" />
-            <link rel="icon" href="/favicon.ico" />
+            <link rel="icon" href="favicon.svg" type="image/svg+xml" />
             {assets}
           </head>
           <body>
@@ -20,6 +21,11 @@ export default createHandler(() => (
           </body>
         </html>
       </MetaProvider>
-    )}
-  />
+    )} />
 ));
+
+function onServerInit() {
+  refresh_db();
+}
+
+onServerInit();
