@@ -1,7 +1,7 @@
 // @refresh reload
 import { MetaProvider } from "@solidjs/meta";
 import { createHandler, StartServer } from "@solidjs/start/server";
-import { db, refresh_db } from "./db/db";
+import { db, db_jobs } from "./db/db";
 
 export default createHandler(() => (
   <StartServer
@@ -26,7 +26,7 @@ export default createHandler(() => (
 
 function onServerInit() {
   db.run('PRAGMA journal_mode = WAL;');
-  refresh_db();
+  db_jobs();
 }
 
 onServerInit();
