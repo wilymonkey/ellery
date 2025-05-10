@@ -20,3 +20,6 @@ export const messages = sqliteTable("messages", {
   is_read: integer({ mode: "boolean" }).default(true),
   verified:  integer({ mode: "boolean" }).default(false),
 });
+
+export type Message = typeof messages.$inferInsert;
+export type Contact = typeof contacts.$inferInsert;

@@ -2,140 +2,49 @@ export function sleep(seconds: number) {
   return new Promise(resolve => setTimeout(resolve, seconds * 1000));
 }
 
-namespace Option {
-  type Some<T> = { readonly kind: 'some'; readonly value: T };
-  type None = { readonly kind: 'none' };
+type Ok<T> = {
+  ok: true;
+  value: T;
+};
 
-  interface OptionMethods<T> {
-    map<U>(fn: (value: T) => U): Option<U>;
-    flatMap<U>(fn: (value: T) => Option<U>): Option<U>;
-    unwrapOr(defaultValue: T): T;
-    fromNullable<T>(value: T | null | undefined): Option<T>;
-    isSome(): this is Some<T>;
-    isNone(): this is None;
+type Fail<E = Error> = {
+  ok: false;
+  error: E;
+};
+
+export class Result<T, E = Error> {
+  private constructor(private readonly outcome: Ok<T> | Fail<E>) { }
+
+  static ok<T>(value: T): Result<T, never> {
+    return new Result({ ok: true, value });
   }
 
-  export type Option<T> = (Some<T> | None) & OptionMethods<T>;
-
-  export function some<T>(value: T): Option<T> {
-    const someObj: Some<T> = { kind: 'some', value };
-    return Object.assign(someObj, createMethods<T>(someObj));
+  static fail<E>(error: E): Result<never, E> {
+    return new Result({ ok: false, error });
   }
 
-  export function none<T = never>(): Option<T> {
-    const noneObj: None = { kind: 'none' };
-    return Object.assign(noneObj, createMethods<T>(noneObj));
-  }
-
-  function createMethods<T>(option: Some<T> | None): OptionMethods<T> {
-    return {
-      map<U>(fn: (value: T) => U): Option<U> {
-        return option.kind === 'some' ? some(fn(option.value)) : none();
-      },
-
-      flatMap<U>(fn: (value: T) => Option<U>): Option<U> {
-        return option.kind === 'some' ? fn(option.value) : none();
-      },
-
-      unwrapOr(defaultValue: T): T {
-        return option.kind === 'some' ? option.value : defaultValue;
-      },
-
-      fromNullable<T>(value: T | null | undefined): Option<T> {
-        return value == null ? none() : some(value);
-      },
-
-      isSome(): this is Some<T> {
-        return option.kind === 'some';
-      },
-
-      isNone(): this is None {
-        return option.kind === 'none';
-      }
-    };
-  }
-}
-
-
-export namespace Result {
-  type Ok<T> = {
-    ok: true;
-    value: T;
-    error?: never;
-  };
-
-  type Failure<E = Error> = {
-    ok: false;
-    value?: never;
-    error: E;
-  };
-
-  interface ResultMethods<T> {
-  }
-
-  export type Result<T, E = Error> = Ok<T> | Failure<E>;
-
-  export function ok<T>(value: T): Ok<T> {
-    const someObj: Ok<T> = { ok: true, value };
-    return Object.assign(someObj, createMethods<T>(someObj));
-  }
-
-  export function error<E = Failure>(): Option<T> {
-    const noneObj: None = { kind: 'none' };
-    return Object.assign(noneObj, createMethods<T>(noneObj));
-  }
-
-  interface ResultMethods<T, E> {
-    map<U>(fn: (value: T) => U): Option<U>;
-    flatMap<U>(fn: (value: T) => Option<U>): Option<U>;
-    unwrapOr(defaultValue: T): T;
-    fromNullable<T>(value: T | null | undefined): Option<T>;
-    isSome(): this is Some<T>;
-    isNone(): this is None;
-  }
-
-
-  function createMethods<T>(option: Some<T> | None): OptionMethods<T> {
-    return {
-      map<U>(fn: (value: T) => U): Option<U> {
-        return option.kind === 'some' ? some(fn(option.value)) : none();
-      },
-
-      flatMap<U>(fn: (value: T) => Option<U>): Option<U> {
-        return option.kind === 'some' ? fn(option.value) : none();
-      },
-
-      unwrapOr(defaultValue: T): T {
-        return option.kind === 'some' ? option.value : defaultValue;
-      },
-
-      fromNullable<T>(value: T | null | undefined): Option<T> {
-        return value == null ? none() : some(value);
-      },
-
-      isSome(): this is Some<T> {
-        return option.kind === 'some';
-      },
-
-      isNone(): this is None {
-        return option.kind === 'none';
-      }
-    };
-  }
-
-  export function success<T>(value: T): Ok<T> {
-    return { ok: true, value };
-  }
-
-  export function failure<E = Failure>(error: E): Failure<E> {
-    return { ok: false, error };
-  }
-
-  export async function tryCatch<T>(fn: () => Promise<T>): Promise<Result<T>> {
+  static async tryAsync<T, E = Error>(
+    fn: () => Promise<T>
+  ): Promise<Result<T, E>> {
     try {
-      return success(await fn());
+      const value = await fn();
+      return Result.ok(value);
     } catch (error) {
-      return failure(error instanceof Error ? error : new Error(String(error)));
+      return Result.fail(error as E);
     }
+  }
+
+  unwrapOr(defaultValue: T): T {
+    return this.outcome.ok ? this.outcome.value : defaultValue;
+  }
+
+  match<U>(onOk: (value: T) => U, onFail: (error: E) => U): U {
+    return this.outcome.ok
+      ? onOk(this.outcome.value as T)
+      : onFail(this.outcome.error as E);
+  }
+
+  map<U>(fn: (value: T) => U): Result<U, E> {
+    return this.outcome.ok ? Result.ok(fn(this.outcome.value)) : (this as any);
   }
 }
