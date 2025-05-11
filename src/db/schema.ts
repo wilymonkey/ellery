@@ -1,25 +1,47 @@
-import { index, int, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { Database } from "bun:sqlite";
+import { migrateTables } from "~/db/migrate";
 
-export const contacts = sqliteTable("contacts", {
-  id: int().primaryKey({ autoIncrement: true }),
-  name: text().default(""),
-  number: int().notNull(),
-  last_message_excerpt: text(),
-  last_message_is_read: integer({ mode: "boolean" }).default(true),
-}, (contact) => [
-    uniqueIndex("number_idx").on(contact.number)
-]);
-
-export const messages = sqliteTable("messages", {
-  id: int().primaryKey({ autoIncrement: true }),
-  contact_id: int().references(() => contacts.id, { onDelete: "cascade" }).notNull(),
-  body: text().notNull(),
-  timestamp: integer({ mode: "timestamp" }).notNull(),
-  // If the message was either sent from the contact or to the contact, i.e. send direction.
-  from_contact: integer({ mode: "boolean" }).default(false),
-  is_read: integer({ mode: "boolean" }).default(true),
-  verified:  integer({ mode: "boolean" }).default(false),
-});
-
-export type Message = typeof messages.$inferInsert;
-export type Contact = typeof contacts.$inferInsert;
+export function initSchema() {
+  // Define your target schemas
+  const targetSchemas = [
+    {
+      tableName: "messages",
+      schema: `
+        CREATE TABLE messages (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          phone_number TEXT NOT NULL,
+          message_text TEXT NOT NULL,
+          is_sent BOOLEAN NOT NULL,
+          timestamp DATETIME NOT NULL,
+          status TEXT,
+          read_status BOOLEAN DEFAULT FALSE,
+          thread_id INTEGER,
+          mms BOOLEAN DEFAULT FALSE
+        )
+      `,
+      indexes: [
+        `CREATE INDEX idx_messages_phone_number ON messages(phone_number)`,
+        `CREATE INDEX idx_messages_timestamp ON messages(timestamp)`,
+        `CREATE INDEX idx_messages_thread_id ON messages(thread_id)`
+      ]
+    },
+    {
+      tableName: "contacts",
+      schema: `
+        CREATE TABLE contacts (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          phone_number TEXT UNIQUE NOT NULL,
+          last_contacted DATETIME,
+          is_favorite BOOLEAN DEFAULT FALSE
+        )
+      `,
+      indexes: [
+        `CREATE INDEX idx_contacts_phone_number ON contacts(phone_number)`,
+        `CREATE INDEX idx_contacts_name ON contacts(name)`
+      ]
+    }
+  ];
+  
+  migrateTables(targetSchemas);
+}

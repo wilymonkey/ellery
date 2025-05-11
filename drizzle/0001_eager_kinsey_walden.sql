@@ -1,1 +1,0 @@
-ALTER TABLE `contacts_table` RENAME TO `contacts`;

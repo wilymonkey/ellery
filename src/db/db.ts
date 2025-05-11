@@ -1,33 +1,34 @@
-import { drizzle } from 'drizzle-orm/better-sqlite3';
+import Database from 'bun:sqlite';
 import twilio from 'twilio'
-import { Result, sleep } from '~/utils';
-import * as schema from '~/db/schema';
+import { sleep } from '~/utils';
+import { initSchema } from './schema';
 
-export const db = drizzle(process.env.DB_FILE_NAME!, { schema });
+export const db = new Database(process.env.DB_FILE_NAME ?? "db.sqlite", { create: true });
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID!;
 const authToken = process.env.TWILIO_AUTH_TOKEN!;
 const number = process.env.TWILIO_NUMBER!;
 export const client = twilio(accountSid, authToken)
 
-export async function db_jobs() {
-  console.log("Running database jobs");
-
-  (await refresh_db()).match(
-      _ => console.log("DB successfully synced"),
-      error => console.log(`Unable to sync DB: ${error}`
-  ));
-
-  await sleep(15 * 60);
-  db_jobs()
+export async function initDb() {
+  console.log("Initialising DB")
+  db.exec('PRAGMA journal_mode = WAL;');
+  initSchema();
 }
 
-export async function refresh_db() {
-  const response = await Result.tryAsync(() => client.messages.list());
-  return response.map((messages) => {
-    console.log(`Found ${messages.length} messages.`)
-    for (let message of messages) {
-    }
-  })
+export async function dbJobs() {
+  refreshDb()
+
+  await sleep(15 * 60);
+  dbJobs()
+}
+
+export async function refreshDb() {
+  console.log("Refreshing DB");
+  try {
+    const response = await client.messages.list();
+  } catch(error) {
+    console.log(`Unable to get messages: ${error}`)
+  }
 }
 

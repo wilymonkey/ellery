@@ -1,7 +1,7 @@
 // @refresh reload
 import { MetaProvider } from "@solidjs/meta";
 import { createHandler, StartServer } from "@solidjs/start/server";
-import { db, db_jobs } from "./db/db";
+import { initDb, dbJobs } from "./db/db";
 
 export default createHandler(() => (
   <StartServer
@@ -24,9 +24,10 @@ export default createHandler(() => (
     )} />
 ));
 
-function onServerInit() {
-  db.run('PRAGMA journal_mode = WAL;');
-  db_jobs();
+async function onServerInit() {
+  await initDb();
+  // Keeps looping, no need to wait on return.
+  dbJobs();
 }
 
 onServerInit();

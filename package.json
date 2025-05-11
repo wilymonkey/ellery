@@ -2,18 +2,14 @@
   "name": "ellery",
   "type": "module",
   "scripts": {
-    "dev": "vinxi dev",
-    "build": "vinxi build",
-    "start": "vinxi start",
-    "db": "bunx drizzle-kit push"
+    "dev": "bunx --bun vinxi dev",
+    "build": "bunx --bun vinxi build",
+    "start": "bunx --bun vinxi start"
   },
   "dependencies": {
     "@solidjs/meta": "^0.29.4",
     "@solidjs/router": "^0.15.0",
     "@solidjs/start": "^1.1.0",
-    "@types/better-sqlite3": "^7.6.13",
-    "better-sqlite3": "^11.10.0",
-    "drizzle-orm": "^0.43.1",
     "solid-js": "^1.9.5",
     "twilio": "^5.6.0",
     "vinxi": "^0.5.3"
@@ -22,7 +18,6 @@
     "@tailwindcss/vite": "^4.0.7",
     "@types/bun": "^1.2.12",
     "bun-types": "^1.2.12",
-    "drizzle-kit": "^0.31.1",
     "tailwindcss": "^4.0.7"
   },
   "engines": {
