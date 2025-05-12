@@ -1,14 +1,18 @@
 import { MetaProvider, Title } from "@solidjs/meta";
 import { ChatList } from "~/components/ChatList";
+import { ElleryLogo } from "~/components/ElleryLogo";
 
 
 export default function Home() {
   return (
     <MetaProvider>
       <Title>Ellery - SMS</Title>
-      <main class="flex flex-col gap-2 bg-slate-800 p-4">
-        <Search />
-        <ChatList />
+      <main class="flex w-full">
+        <div class="flex flex-col gap-2 bg-slate-800 p-4">
+          <Search />
+          <ChatList />
+        </div>
+        <ElleryLogo />
       </main>
     </MetaProvider>
   );
