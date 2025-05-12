@@ -2,9 +2,9 @@
   "name": "ellery",
   "type": "module",
   "scripts": {
-    "dev": "bunx --bun vinxi dev",
-    "build": "bunx --bun vinxi build",
-    "start": "bunx --bun vinxi start"
+    "dev": "bun x --bun vinxi dev",
+    "build": "bun x --bun vinxi build",
+    "start": "bun x --bun vinxi start"
   },
   "dependencies": {
     "@solidjs/meta": "^0.29.4",

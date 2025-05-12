@@ -13,7 +13,7 @@ type Fail<E = Error> = {
 };
 
 export class Result<T, E = Error> {
-  private constructor(private readonly outcome: Ok<T> | Fail<E>) { }
+  private constructor(private readonly outcome: Ok<T> | Fail<E>) {}
 
   static ok<T>(value: T): Result<T, never> {
     return new Result({ ok: true, value });
@@ -24,7 +24,7 @@ export class Result<T, E = Error> {
   }
 
   static async tryAsync<T, E = Error>(
-    fn: () => Promise<T>
+    fn: () => Promise<T>,
   ): Promise<Result<T, E>> {
     try {
       const value = await fn();

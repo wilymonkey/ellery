@@ -6,10 +6,18 @@ export default function Orders() {
     <MetaProvider>
       <Title>Ellery - Contacts</Title>
       <main class="flex w-full">
-        <div class="flex flex-col gap-2 bg-slate-800 p-4">
-          <div class="flex gap-2 bg-slate-700 rounded-md h-min p-2 items-center">
-            <svg class="size-5"><use href="/sprites.svg#magnifying-glass"></use></svg>
-            <input class="outline-none" type="search" id="chat-search" name="q" placeholder="Search" />
+        <div class="flex flex-col gap-2 bg-zinc-900 p-4">
+          <div class="flex gap-2 bg-zinc-800 rounded-md h-min p-2 items-center">
+            <svg class="size-5">
+              <use href="/sprites.svg#magnifying-glass"></use>
+            </svg>
+            <input
+              class="outline-none"
+              type="search"
+              id="chat-search"
+              name="q"
+              placeholder="Search"
+            />
           </div>
           <div class="">
           </div>

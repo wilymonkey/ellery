@@ -5,7 +5,7 @@ export default function Orders() {
     <MetaProvider>
       <Title>Ellery - Orders</Title>
       <main class="flex items-center justify-center w-full">
-        <p class="text-3xl">Settings</p>
+        <p class="text-7xl font-alumni">Settings</p>
       </main>
     </MetaProvider>
   );
