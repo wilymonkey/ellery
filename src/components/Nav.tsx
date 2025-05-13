@@ -3,7 +3,7 @@ import { JSX } from "solid-js";
 
 export default function Nav() {
   return (
-    <nav class="bg-zinc-900 border-r-1 border-yellow-200">
+    <nav class="bg-zinc-900 border-r-1 border-yellow-500">
       <ul class="flex flex-col justify-center p-4 text-gray-200 gap-4 h-full">
         <NavItem link="/" icon="chat-bubble">SMS</NavItem>
         <NavItem link="/orders" icon="box">Orders</NavItem>

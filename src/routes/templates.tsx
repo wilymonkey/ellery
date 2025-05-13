@@ -6,9 +6,9 @@ export default function Templates() {
     <MetaProvider>
       <Title>Ellery - Templates</Title>
       <main class="flex w-full">
-        <div class="flex flex-col gap-2 bg-zinc-900 p-4 min-w-xs">
+        <div class="flex flex-col gap-2 bg-zinc-900 p-4 w-xs">
           <div class="bg-zinc-800 rounded-md h-min p-2 w-full">
-            <div class="text-center">Templates</div>
+            <div class="text-center font-alumni font-bold text-2xl">Templates</div>
           </div>
         </div>
         <ElleryLogo />

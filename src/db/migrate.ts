@@ -31,6 +31,7 @@ async function migrateTable(
   targetSchema: string,
   targetIndexes: string[] = [],
 ): Promise<void> {
+  console.log("======================");
   const tableExists = db
     .prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name=?`)
     .get(tableName);
@@ -80,6 +81,10 @@ function createIndexes(
   tableName: string,
   indexQueries: string[],
 ): void {
+  if (indexQueries.length < 1) {
+    console.log(`No indexes for "${tableName}"`);
+  }
+
   const existingIndexes = db
     .prepare(
       `SELECT name FROM sqlite_master 
@@ -88,10 +93,12 @@ function createIndexes(
     .all(tableName) as Array<{ name: string }>;
 
   for (const { name } of existingIndexes) {
+    console.log(`Dropping index ${name} from table ${tableName}`);
     db.exec(`DROP INDEX IF EXISTS ${name}`);
   }
 
   for (const indexQuery of indexQueries) {
+    console.log(`Adding index ${indexQuery}`);
     db.exec(indexQuery);
   }
 }

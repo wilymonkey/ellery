@@ -22,6 +22,9 @@ export const schemas = [
         verified BOOLEAN DEFAULT FALSE
       )
     `,
+    indexes: [
+      "CREATE INDEX idx_messages_by_number ON messages(number, timestamp DESC, is_sent DESC);",
+    ],
   },
   {
     tableName: "contacts",

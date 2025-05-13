@@ -14,7 +14,7 @@ const getChats = query(async () => {
         -- First sort by timestamp (newest first), then prefer sent messages
         ROW_NUMBER() OVER (
           PARTITION BY number 
-          ORDER BY timestamp DESC, is_sent DESC, id DESC
+          ORDER BY timestamp DESC, is_sent DESC
         ) as rank
       FROM messages
     )
@@ -33,14 +33,12 @@ export function ChatList() {
     <For each={messages()}>
       {(item) => {
         return (
-          <div class="rounded-md hover:bg-zinc-800 p-4">
-            <div class="">
-              {item.number}
+          <a href={item.number}>
+            <div class="rounded-md hover:bg-zinc-800 p-4">
+              <div class="font-bold">{item.number}</div>
+              <div class="line-clamp-[2] text-zinc-400">{item.body}</div>
             </div>
-            <div class="line-clamp-[2]">
-              {item.body}
-            </div>
-          </div>
+          </a>
         );
       }}
     </For>
