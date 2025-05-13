@@ -13,7 +13,7 @@ type Fail<E = Error> = {
 };
 
 export class Result<T, E = Error> {
-  private constructor(private readonly outcome: Ok<T> | Fail<E>) {}
+  private constructor(private readonly outcome: Ok<T> | Fail<E>) { }
 
   static ok<T>(value: T): Result<T, never> {
     return new Result({ ok: true, value });

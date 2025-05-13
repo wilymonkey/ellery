@@ -18,7 +18,7 @@ export function MessageHistory() {
   const flex_reverse = (is_sent: boolean) => is_sent ? "flex-row-reverse" : "";
 
   return (
-    <div class="flex flex-col gap-4 p-4">
+    <div class="flex flex-col gap-4 p-4 grow">
       <For each={conversation()}>
         {(message) => {
           const is_sent = message.is_sent === "TRUE";
