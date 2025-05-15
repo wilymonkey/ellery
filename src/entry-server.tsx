@@ -1,7 +1,7 @@
 // @refresh reload
 import { MetaProvider } from "@solidjs/meta";
 import { createHandler, StartServer } from "@solidjs/start/server";
-import { dbJobs, initDb } from "./db/db";
+import { initDb } from "./db/db";
 
 export default createHandler(() => (
   <StartServer
@@ -18,7 +18,7 @@ export default createHandler(() => (
               name="viewport"
               content="width=device-width, initial-scale=1"
             />
-            <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+            <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
             {assets}
           </head>
           <body id="app">

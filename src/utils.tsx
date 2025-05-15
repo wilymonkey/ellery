@@ -2,6 +2,10 @@ export function sleep(seconds: number) {
   return new Promise(resolve => setTimeout(resolve, seconds * 1000));
 }
 
+export function simpleNumber(number: string) {
+  return `0${number.substring(3)}`
+}
+
 type Ok<T> = {
   ok: true;
   value: T;

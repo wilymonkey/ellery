@@ -18,8 +18,7 @@ export const schemas = [
         body TEXT NOT NULL,
         timestamp DATETIME NOT NULL,
         is_sent BOOLEAN NOT NULL,
-        is_read BOOLEAN DEFAULT FALSE,
-        verified BOOLEAN DEFAULT FALSE
+        is_read BOOLEAN DEFAULT FALSE
       )
     `,
     indexes: [

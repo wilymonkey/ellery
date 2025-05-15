@@ -1,5 +1,6 @@
 import Database from "bun:sqlite";
 import twilio from "twilio";
+import { MessageInstance } from "twilio/lib/rest/api/v2010/account/message";
 import { sleep } from "~/utils";
 import { accountSid, authToken, myNumber } from "./env";
 import { migrateTables } from "./migrate";
@@ -9,7 +10,7 @@ export const db = new Database(process.env.DB_FILE_NAME ?? "db.sqlite", {
   create: true,
 });
 
-export const client = twilio(accountSid, authToken);
+export const twilioClient = twilio(accountSid, authToken);
 
 export async function initDb() {
   function minsToNextQuarter(): number {
@@ -21,6 +22,7 @@ export async function initDb() {
   console.log("Initialising DB");
   db.exec("PRAGMA journal_mode = WAL;");
   await migrateTables(schemas);
+  console.log(db.query("SELECT * from messages").all());
   await sleep(minsToNextQuarter() * 60);
 
   dbJobs();
@@ -33,37 +35,38 @@ export async function dbJobs() {
   dbJobs();
 }
 
-export async function fetchMessages() {
+export function insertMessageInstance(message: MessageInstance) {
   const insert = db.prepare(`
-    INSERT INTO messages (id, number, body, timestamp, is_sent, verified)
-    VALUES ($id, $number, $body, $timestamp, $is_sent, TRUE)
-    ON CONFLICT(id) DO UPDATE SET verified=TRUE
+    INSERT INTO messages (id, number, body, timestamp, is_sent)
+    VALUES ($id, $number, $body, $timestamp, $is_sent)
+    ON CONFLICT (id) DO NOTHING
  `);
-  const insertMessages = db.transaction(messages => {
-    for (const msg of messages) insert.run(msg);
+  let number = message.from;
+  let is_sent = "FALSE";
+  if (myNumber === message.from) {
+    number = message.to;
+    is_sent = "TRUE";
+  }
+  insert.run({
+    $id: message.sid,
+    $number: number,
+    $body: message.body,
+    $timestamp: message.dateCreated.toISOString(),
+    $is_sent: is_sent,
+  });
+}
+
+export async function fetchMessages() {
+  const insertMessages = db.transaction((messages: MessageInstance[]) => {
+    for (const msg of messages) insertMessageInstance(msg);
     return messages.length;
   });
 
   console.log("Fetching messages from Twilio");
 
   try {
-    const response = await client.messages.list();
-    const messages = response.map(message => {
-      let number = message.from;
-      let is_sent = "FALSE";
-      if (myNumber === message.from) {
-        number = message.to;
-        is_sent = "TRUE";
-      }
-      return {
-        $id: message.sid,
-        $number: number,
-        $body: message.body,
-        $timestamp: message.dateSent.toISOString(),
-        $is_sent: is_sent,
-      };
-    });
-    const messagesInserted = insertMessages(messages);
+    const response = await twilioClient.messages.list();
+    const messagesInserted = insertMessages(response);
     console.log(`Upserted ${messagesInserted} messages`);
   } catch (error) {
     console.error(`Unable to fetch messages: ${error}`);

@@ -20,12 +20,12 @@ export const ChatCreate: Component<{ setHidden: Setter<boolean> }> = (props) => 
         number = '+61' + number.substring(1);
       }
       props.setHidden((_) => true);
-      navigate(`/${number}`, { replace: true });
+      navigate(`/chats/${number}`, { replace: true });
     }
   }
 
   function validatePhoneNumber(phone: string) {
-    // Formats: 04XX XXX XXX, 04XXXXXXXX, +614XX XXX XXX, +614XXXXXXXX
+    // Formats: 04XXXXXXXX, +614XXXXXXXX
     const ausMobileRegex = /^(?:\+61|0)4\d{8}$/;
     // Remove all whitespace for validation
     const cleanedPhone = phone.replace(/\s/g, '');
@@ -42,7 +42,7 @@ export const ChatCreate: Component<{ setHidden: Setter<boolean> }> = (props) => 
           id="phone"
           value={phoneNumber()}
           onInput={handleInput}
-          class="border-2 border-zinc-200 rounded-md p-2 outline-none"
+          class="border-2 border-zinc-200 rounded-md p-2 outline-none w-full"
         />
       </div>
       <button

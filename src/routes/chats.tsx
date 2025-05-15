@@ -1,9 +1,9 @@
 import { MetaProvider, Title } from "@solidjs/meta";
 import { RouteSectionProps } from "@solidjs/router";
 import { createContext, createSignal, Show } from "solid-js";
-import { ChatList } from "~/components/ChatList";
-import { ChatSearch } from "~/components/ChatSearch";
-import { ChatCreate } from "~/components/ChatCreate";
+import { ChatList } from "~/components/chat/List";
+import { ChatListSearch } from "~/components/chat/ListSearch";
+import { ChatCreate } from "~/components/chat/Create";
 import { ElleryLogo } from "~/components/ElleryLogo";
 
 export default function SMSLayout(props: RouteSectionProps) {
@@ -22,14 +22,14 @@ export default function SMSLayout(props: RouteSectionProps) {
               <Show
                 when={newSMSHidden()}
                 fallback={
-                  <svg class="text-red-400"><use href="sprites.svg#x-circle"></use></svg>
+                  <svg class="text-red-400"><use href="/sprites.svg#x-circle"></use></svg>
                 }>
-                <svg><use href="sprites.svg#pencil-square"></use></svg>
+                <svg><use href="/sprites.svg#pencil-square"></use></svg>
               </Show>
             </button>
           </div>
           <Show when={newSMSHidden()} fallback={<ChatCreate setHidden={setNewSMS} />}>
-            <ChatSearch />
+            <ChatListSearch />
             <ChatList />
           </Show>
         </div>
