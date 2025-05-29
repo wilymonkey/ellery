@@ -1,23 +1,27 @@
 package app
 
 import (
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"html/template"
 	"io"
+	"net/http"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
-type Templates struct {
+type templates struct {
 	templates *template.Template
 }
 
-func (t *Templates) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+func (t *templates) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	return t.templates.ExecuteTemplate(w, name, data)
 }
 
-func newTemplate() *Templates {
-	return &Templates{
-		templates: template.Must(template.ParseGlob("views/*.html")),
+func newTemplates() *templates {
+	tmpl := template.Must(template.ParseFiles("templates/index.html", "templates/base.html"))
+	tmpl = template.Must(tmpl.ParseGlob("templates/partials/*.html"))
+	return &templates{
+		templates: tmpl,
 	}
 }
 
@@ -82,16 +86,14 @@ func newPage() Page {
 }
 
 func Run() {
-
 	e := echo.New()
 	e.Use(middleware.Logger())
-
 	page := newPage()
-	e.Renderer = newTemplate()
+	e.Renderer = newTemplates()
 	e.Static("/static", "static")
 
 	e.GET("/", func(c echo.Context) error {
-		return c.Render(200, "index", page)
+		return c.Render(http.StatusOK, "base", page)
 	})
 
 	e.POST("/contacts", func(c echo.Context) error {
@@ -110,11 +112,10 @@ func Run() {
 		contact := newContact(name, email)
 		page.Data.Contacts = append(page.Data.Contacts, contact)
 
-		// TODO: ??????
 		c.Render(200, "form", newFormData())
 		return c.Render(200, "oob-contact", contact)
 	})
 
-	e.Logger.Fatal(e.Start(":42069"))
+	e.Logger.Fatal(e.Start(":1111"))
 
 }

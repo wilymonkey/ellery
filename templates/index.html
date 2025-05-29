@@ -1,34 +1,11 @@
-{{ block "index" . }}
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title></title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script src="/static/htmx.min.js"></script>
-    </head>
-    <body>
-        {{ template "form" .Form }}
-        <hr />
-        {{ template "display" .Data }}
-<script>
-document.addEventListener("DOMContentLoaded", (event) => {
-    document.body.addEventListener('htmx:beforeSwap', function(evt) {
-        if (evt.detail.xhr.status === 422) {
-            // allow 422 responses to swap as we are using this as a signal that
-            // a form was submitted with bad data and want to rerender with the
-            // errors
-            //
-            // set isError to false to avoid error logging in console
-            evt.detail.shouldSwap = true;
-            evt.detail.isError = false;
-        }
-    });
-})
-</script>
-    </body>
-</html>
+{{ block "title" . }}Ellery - SMS{{ end }}
+
+{{ block "content" . }}
+{{ template "form" .Form }}
+<hr />
+{{ template "display" .Data }}
 {{ end }}
+
 
 {{ block "form" . }}
 <form hx-swap="outerHTML" hx-post="/contacts">
